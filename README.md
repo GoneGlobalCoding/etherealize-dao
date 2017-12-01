@@ -370,6 +370,18 @@ module.exports = {
 }
 ```
 
+### Prior to deployment, ensure you've created a migration file that links to the contract
+```
+cat migrations/2_deploy_contract.js
+```
+```
+var EtherealizeDAO = artifacts.require("./EtherealizeDAO.sol");
+
+module.exports = function(deployer) {
+  deployer.deploy(EtherealizeDAO);
+};
+```
+
 ### Use truffle to migrate contract to the target network
 ```
 cd ~/etherealize-dao
