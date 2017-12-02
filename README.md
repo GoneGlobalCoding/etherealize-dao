@@ -4,11 +4,14 @@
 $ truffle --version
 Truffle v4.0.1 - a development framework for Ethereum
 ```
-### Development steps thus far
 
+### Pull repo and proceed straight to the node setup/truffle.js config sections
 ```
 git clone https://github.com/etherealize/etherealize-dao.git
-cd ~/etherealize-dao
+```
+### ALTERNATIVE - development from empty directory using these steps (if starting from an empty directory)
+```
+mkdir -p ~/etherealize-dao
 truffle init
 ```
 
