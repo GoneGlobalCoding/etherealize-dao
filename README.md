@@ -384,7 +384,7 @@ false
 > web3.eth.blockNumber
 2179597
 ```
-### Modify the truffle.js config to be appropriate for the node
+### Modify the truffle.js config to be appropriate for the node. The key is to specify the from address that has been unlocked already
 ```
 cat truffle.js
 ```
@@ -400,7 +400,7 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: 3,
-      from: "0xe47c4befb25055860fd026e96885b30c7a244b30" // Enter your geth node wallet public address here
+      from: "0xe47c4befb25055860fd026e96885b30c7a244b30", // Enter your geth node wallet public address here that is unlocked as per above geth node
       gas: 4612388,
       gasPrice: 2776297000
     }
@@ -425,7 +425,11 @@ undefined
 > eth.defaultAccount = eth.accounts[1]
 "0xe47c4befb25055860fd026e96885b30c7a244b30"
 ```
-### Create a new migration file that accepts an environment variable for the purpose of unlocking the geth node account for contract deploy
+### Alternatively a new migration file can accept an environment variable for the purpose of unlocking the geth node account for contract deploy.
+This is a FYI - do not actually do this
+```
+npm install web3 -S
+```
 ```
 cat migrations/3_deploy_contract_geth.js
 ```
@@ -460,10 +464,10 @@ mv migrations/2_deploy_contract.js.bak migrations/2_deploy_contract.js.bak
 
 ### Use truffle to migrate contract to the target network
 ```
-ACCOUNT_PASSWORD="passphrase" truffle migrate --network ropsten
+ACCOUNT_PASSWORD="PASS PHRASE TO UNLOCK YOUR GETH 'from' ACCOUNT" truffle migrate --network ropsten
 ```
 
-## INFURA OR TESTRPC ONLY
+## Back on track - deploy the contract
 ### Prior to deployment, ensure you've created a migration file that links to the contract
 ```
 cat migrations/2_deploy_contract.js
@@ -475,13 +479,23 @@ module.exports = function(deployer) {
   deployer.deploy(EtherealizeDAO);
 };
 ```
-Move other migrations in the migrations folder to another filename to avoid them migration
-```
-mv migrations/1_initial_migration.js migrations/1_initial_migration.js.bak
-```
 
 ### Use truffle to migrate contract to the target network
 ```
 cd ~/etherealize-dao
 truffle migrate --network ropsten
+Using network 'ropsten'.
+
+Running migration: 2_deploy_contract.js
+  Deploying EtherealizeDAO...
+  ... 0x43e234a2fad5125b9f0a4ee9f5e69d24bcef1f7131658dda9fb0a2c9f07b1966
+  EtherealizeDAO: 0x0e0e3d3e8e7347d446b4956ba65aed39dd625967
+Saving successful migration to network...
+  ... 0x359ddbbb86216f117b8ab29e23306ff6df0106d214e9ce04584ce83ed342874f
+Saving artifacts...
 ```
+
+### Grab the EtherealizeDAO address after successful deploy
+https://ropsten.etherscan.io/address/0x0e0e3d3e8e7347d446b4956ba65aed39dd625967#code
+
+You should now be able to interact with the contract. Use web3 from a front end app for example.
