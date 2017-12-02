@@ -1,0 +1,22 @@
+{
+  "name": "etherealize-dao",
+  "version": "1.0.0",
+  "description": "``` $ truffle --version Truffle v4.0.1 - a development framework for Ethereum ``` ### Development steps thus far",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etherealize/etherealize-dao.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/etherealize/etherealize-dao/issues"
+  },
+  "homepage": "https://github.com/etherealize/etherealize-dao#readme"
+}

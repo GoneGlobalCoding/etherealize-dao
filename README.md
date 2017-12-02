@@ -370,6 +370,100 @@ module.exports = {
 }
 ```
 
+### If deploying your contract to local ropsten node, bring the node up on your machine
+Note: must have geth on your machine. Get go-ethereum from associated git following their quick install.
+```
+geth --unlock <ENTER HASH OF ACCOUNT ON NODE THAT HAS ETH AND CAN DEPLOY CONTRACTS> --testnet --cache=1024 --bootnodes "enode://20c9ad97c081d63397d7b685a412227a40e23c8bdc6688c6f37e97cfbc22d2b4d1db1510d8f61e6a8866ad7f0e17c02b14182d37ea7c3c8b9c2683aeb6b733a1@52.169.14.227:30303,enode://6ce05930c72abc632c58e2e4324f7c7ea478cec0ed4fa2528982cf34483094e9cbc9216e7aa349691242576d552a2a56aaeae426c5303ded677ce455ba1acd9d@13.84.180.240:30303" --rpc --rpcaddr "127.0.0.1" --rpcport "8545" --rpccorsdomain "*" --rpcapi "web3,db,net,personal,txpool,eth,admin,shh,debug"
+```
+You can attach to the node to execute web3 command like below
+```
+geth attach ipc:/home/$USER/.ethereum/testnet/geth.ipc
+> web3.eth.syncing
+false
+
+> web3.eth.blockNumber
+2179597
+```
+### Modify the truffle.js config to be appropriate for the node
+```
+cat truffle.js
+```
+```
+module.exports = {
+  networks: {
+    development: {
+      host: "localhost",
+      port: 8545,
+      network_id: "*"
+    },
+    ropsten: {
+      host: "localhost",
+      port: 8545,
+      network_id: 3,
+      from: "0xe47c4befb25055860fd026e96885b30c7a244b30" // Enter your geth node wallet public address here
+      gas: 4612388,
+      gasPrice: 2776297000
+    }
+  }
+}
+
+```
+### You'll have to ensure that the node you are connecting to has an account that enables deploying of contracts
+If you don't unlock an account on your go-ethereum node, your attempt to deploy will be met with the following error
+```
+Error encountered, bailing. Network state unknown. Review successful transactions manually.
+Error: authentication needed: password or unlock
+```
+1. Ensure your go-ethereum node that you launched above had a --unlock flag with the subsequent public address of a linked account
+1. Attach to your node to ensure that unlocked account is set to the default account of the node - for future contract deploy requests
+```
+$ geth attach ipc:/home/$USER/.ethereum/testnet/geth.ipc
+> eth.accounts
+["0xf02c6879a095869357d792a501530254ed68aeb3", "0xe47c4befb25055860fd026e96885b30c7a244b30"]
+> eth.defaultAccount
+undefined
+> eth.defaultAccount = eth.accounts[1]
+"0xe47c4befb25055860fd026e96885b30c7a244b30"
+```
+### Create a new migration file that accepts an environment variable for the purpose of unlocking the geth node account for contract deploy
+```
+cat migrations/3_deploy_contract_geth.js
+```
+```
+const Web3 = require('web3');
+
+const TruffleConfig = require('../truffle');
+
+var EtherealizeDAO = artifacts.require("./EtherealizeDAO.sol");
+
+
+module.exports = function(deployer, network, addresses) {
+  const config = TruffleConfig.networks[network];
+
+  if (process.env.ACCOUNT_PASSWORD) {
+    const web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.host + ':' + config.port));
+
+    console.log('>> Unlocking account ' + config.from);
+    web3.personal.unlockAccount(config.from, process.env.ACCOUNT_PASSWORD, 36000);
+  }
+
+  console.log('>> Deploying EtherealizeDAO');
+  deployer.deploy(EtherealizeDAO);
+};
+```
+
+Move other migrations in the migrations folder to another filename to avoid them migration
+```
+mv migrations/1_initial_migration.js migrations/1_initial_migration.js.bak
+mv migrations/2_deploy_contract.js.bak migrations/2_deploy_contract.js.bak
+```
+
+### Use truffle to migrate contract to the target network
+```
+ACCOUNT_PASSWORD="passphrase" truffle migrate --network ropsten
+```
+
+## INFURA OR TESTRPC ONLY
 ### Prior to deployment, ensure you've created a migration file that links to the contract
 ```
 cat migrations/2_deploy_contract.js
@@ -380,6 +474,10 @@ var EtherealizeDAO = artifacts.require("./EtherealizeDAO.sol");
 module.exports = function(deployer) {
   deployer.deploy(EtherealizeDAO);
 };
+```
+Move other migrations in the migrations folder to another filename to avoid them migration
+```
+mv migrations/1_initial_migration.js migrations/1_initial_migration.js.bak
 ```
 
 ### Use truffle to migrate contract to the target network
