@@ -7,7 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "PORT=3006 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "repository": {
     "type": "git",
@@ -18,5 +21,14 @@
   "bugs": {
     "url": "https://github.com/etherealize/etherealize-dao/issues"
   },
-  "homepage": "https://github.com/etherealize/etherealize-dao#readme"
+  "homepage": "https://github.com/etherealize/etherealize-dao#readme",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "material-ui": "^0.19.4",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "^1.0.17",
+    "web3": "^1.0.0-beta.26"
+  }
 }
