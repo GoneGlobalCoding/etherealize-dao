@@ -502,3 +502,9 @@ Saving artifacts...
 https://ropsten.etherscan.io/address/0x0e0e3d3e8e7347d446b4956ba65aed39dd625967#code
 
 You should now be able to interact with the contract. Use web3 from a front end app for example.
+
+## Start the react front end development web server. Opens up on localhost:3006
+```
+npm install
+npm start
+```
